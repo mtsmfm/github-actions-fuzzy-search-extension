@@ -10,7 +10,8 @@
         "https://github.com/*/actions",
         "https://github.com/*/actions/*"
       ],
-      "js": ["src/content.tsx"]
+      "js": ["src/content.tsx"],
+      "run_at": "document_end"
     }
   ],
   "manifest_version": 3
