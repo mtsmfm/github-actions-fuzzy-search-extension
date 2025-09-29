@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/chrome-manifest.json",
+  "name": "GitHub Actions Fuzzy Search",
+  "description": "Fuzzy search for GitHub Actions",
+  "version": "0.1.0",
+  "permissions": ["scripting", "storage"],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://github.com/*/actions",
+        "https://github.com/*/actions/*"
+      ],
+      "js": ["src/content.tsx"]
+    }
+  ],
+  "manifest_version": 3
+}

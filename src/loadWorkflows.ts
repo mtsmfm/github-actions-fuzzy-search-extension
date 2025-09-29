@@ -1,0 +1,77 @@
+export type Workflow = {
+  name: string;
+  url: string;
+};
+
+export const loadWorkflows = async ({
+  org,
+  repo,
+}: {
+  org: string;
+  repo: string;
+}): Promise<Workflow[]> => {
+  return withCache(
+    `workflows-${org}-${repo}`,
+    () => _loadWorkflows({ org, repo }),
+    1000 * 60 * 5
+  ); // 5 minutes
+};
+
+const _loadWorkflows = async ({
+  org,
+  repo,
+}: {
+  org: string;
+  repo: string;
+}): Promise<Workflow[]> => {
+  let page = 1;
+
+  const allResults: Workflow[] = [];
+
+  while (true) {
+    const res = await fetch(
+      `https://github.com/${org}/${repo}/actions/workflows_partial?query=&page=${page}`
+    );
+    const text = await res.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, "text/html");
+    const results = [...doc.querySelectorAll<HTMLElement>("li")]
+      .map((li) => ({
+        name: li.querySelector<HTMLElement>("tool-tip")?.innerText,
+        url: li.querySelector<HTMLAnchorElement>("a")?.href,
+      }))
+      .filter((item) => item.name && item.url)
+      .map((item) => ({
+        name: item.name!,
+        url: item.url!,
+      }));
+
+    if (results.length === 0) {
+      break;
+    }
+
+    allResults.push(...results);
+    page++;
+  }
+
+  return allResults;
+};
+
+const withCache = async <T>(
+  key: string,
+  fetcher: () => Promise<T>,
+  maxAge: number
+): Promise<T> => {
+  let cache: { data: T; timestamp: number } =
+    (await chrome.storage.local.get(key))[key] || {};
+  const now = Date.now();
+
+  if (cache && now - cache.timestamp < maxAge) {
+    return cache.data;
+  }
+
+  const data = await fetcher();
+  cache = { data, timestamp: now };
+  await chrome.storage.local.set({ [key]: cache });
+  return data;
+};

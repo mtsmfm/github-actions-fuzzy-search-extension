@@ -1,0 +1,19 @@
+{
+  "devDependencies": {
+    "@parcel/config-webextension": "^2.16.0",
+    "@types/chrome": "^0.1.12",
+    "@types/react": "^19.1.15",
+    "@types/react-dom": "^19.1.9",
+    "parcel": "^2.16.0",
+    "typescript": "^5.9.2"
+  },
+  "scripts": {
+    "dev": "parcel watch manifest.json --host localhost --config @parcel/config-webextension",
+    "build": "parcel build manifest.json --config @parcel/config-webextension"
+  },
+  "dependencies": {
+    "fuse.js": "^7.1.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  }
+}
