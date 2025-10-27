@@ -62,6 +62,8 @@ const _loadWorkflows = async ({
   return allResults;
 };
 
+let ongoingFetches: { [key: string]: Promise<any> } = {};
+
 const withCache = async <T>(
   key: string,
   fetcher: () => Promise<T>,
@@ -75,8 +77,21 @@ const withCache = async <T>(
     return cache.data;
   }
 
-  const data = await fetcher();
-  cache = { data, timestamp: now };
-  await chrome.storage.local.set({ [key]: cache });
-  return data;
+  const fetchAndUpdateCache = async () => {
+    const data = await fetcher();
+    cache = { data, timestamp: now };
+    await chrome.storage.local.set({ [key]: cache });
+    return data;
+  };
+
+  if (cache) {
+    if (!ongoingFetches[key]) {
+      ongoingFetches[key] = fetchAndUpdateCache().finally(() => {
+        delete ongoingFetches[key];
+      });
+    }
+    return cache.data;
+  }
+
+  return await fetchAndUpdateCache();
 };
