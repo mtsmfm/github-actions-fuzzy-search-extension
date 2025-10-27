@@ -1,30 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
-import { Workflow } from "./loadWorkflows";
-import Fuse from "fuse.js";
+import { Suspense, useEffect, useState } from "react";
+import { Spinner } from "./Spinner";
+import { WorkflowList } from "./WorkflowList";
 
 export function App({
-  workflows,
+  org,
+  repo,
   original,
 }: {
-  workflows: Workflow[];
+  org: string;
+  repo: string;
   original: HTMLElement;
 }) {
-  const [filter, setFilter] = useState("");
-  const fuse = useMemo(
-    () =>
-      new Fuse(workflows, {
-        keys: ["name"],
-        useExtendedSearch: true,
-      }),
-    [workflows]
-  );
-
-  const filteredWorkflows = useMemo(
-    () =>
-      filter ? fuse.search(filter).map((result) => result.item) : workflows,
-    [filter, fuse, workflows]
-  );
-
   const [isOriginalVisible, setIsOriginalVisible] = useState(
     () => original.style.display !== "none"
   );
@@ -36,25 +22,9 @@ export function App({
   return (
     <div>
       {!isOriginalVisible && (
-        <>
-          <input
-            type="text"
-            placeholder="Filter workflows..."
-            style={{ margin: "8px 0px", padding: "4px", width: "100%" }}
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          />
-          <ul>
-            {filteredWorkflows.map((workflow) => (
-              <li
-                key={workflow.url}
-                style={{ listStyle: "none", padding: "2px 0px" }}
-              >
-                <a href={workflow.url}>{workflow.name}</a>
-              </li>
-            ))}
-          </ul>
-        </>
+        <Suspense fallback={<Spinner />}>
+          <WorkflowList org={org} repo={repo} />
+        </Suspense>
       )}
 
       <div

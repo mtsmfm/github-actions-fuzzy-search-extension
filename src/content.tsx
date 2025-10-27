@@ -1,6 +1,5 @@
 import { createRoot } from "react-dom/client";
 import { App } from "./App";
-import { loadWorkflows } from "./loadWorkflows";
 
 const renderApp = async (
   original: HTMLElement & { parentElement: HTMLElement }
@@ -28,8 +27,7 @@ const renderApp = async (
 
   host.appendChild(appRoot);
 
-  const workflows = await loadWorkflows({ org, repo });
-  createRoot(appRoot).render(<App workflows={workflows} original={original} />);
+  createRoot(appRoot).render(<App original={original} org={org} repo={repo} />);
 };
 
 const SELECTOR = "actions-workflow-list nav-list-group";
