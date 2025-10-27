@@ -35,7 +35,11 @@ export function WorkflowList({ org, repo }: { org: string; repo: string }) {
         {filteredWorkflows.map((workflow) => (
           <li
             key={workflow.url}
-            style={{ listStyle: "none", padding: "2px 0px" }}
+            style={{
+              listStyle: "none",
+              padding: "2px 0px",
+              textDecoration: workflow.disabled ? "line-through" : "none",
+            }}
           >
             <a href={workflow.url}>{workflow.name}</a>
           </li>

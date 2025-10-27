@@ -1,6 +1,7 @@
 export type Workflow = {
   name: string;
   url: string;
+  disabled: boolean;
 };
 
 export const loadWorkflows = async ({
@@ -39,11 +40,15 @@ const _loadWorkflows = async ({
       .map((li) => ({
         name: li.querySelector<HTMLElement>("tool-tip")?.innerText,
         url: li.querySelector<HTMLAnchorElement>("a")?.href,
+        disabled:
+          li.querySelector<HTMLSpanElement>(".color-fg-muted")?.innerText ===
+          "Disabled",
       }))
       .filter((item) => item.name && item.url)
       .map((item) => ({
         name: item.name!,
         url: item.url!,
+        disabled: item.disabled,
       }));
 
     if (results.length === 0) {
