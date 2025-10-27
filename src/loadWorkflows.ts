@@ -69,8 +69,9 @@ const withCache = async <T>(
   fetcher: () => Promise<T>,
   maxAge: number
 ): Promise<T> => {
-  let cache: { data: T; timestamp: number } =
-    (await chrome.storage.local.get(key))[key] || {};
+  const cache: { data: T; timestamp: number } = (
+    await chrome.storage.local.get(key)
+  )[key];
   const now = Date.now();
 
   if (cache && now - cache.timestamp < maxAge) {
@@ -79,7 +80,7 @@ const withCache = async <T>(
 
   const fetchAndUpdateCache = async () => {
     const data = await fetcher();
-    cache = { data, timestamp: now };
+    const cache = { data, timestamp: now };
     await chrome.storage.local.set({ [key]: cache });
     return data;
   };
