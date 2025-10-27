@@ -21,7 +21,7 @@ const renderApp = async (
   const repo = match[2];
 
   const host = document.createElement("div");
-  original.parentElement.prepend(host);
+  original.parentElement.append(host);
   original.style.display = "none";
 
   const appRoot = document.createElement("div");
@@ -29,7 +29,7 @@ const renderApp = async (
   host.appendChild(appRoot);
 
   const workflows = await loadWorkflows({ org, repo });
-  createRoot(appRoot).render(<App workflows={workflows} />);
+  createRoot(appRoot).render(<App workflows={workflows} original={original} />);
 };
 
 const SELECTOR = "actions-workflow-list nav-list-group";
