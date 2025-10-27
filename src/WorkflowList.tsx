@@ -12,6 +12,7 @@ export function WorkflowList({ org, repo }: { org: string; repo: string }) {
       new Fuse(workflows, {
         keys: ["name"],
         useExtendedSearch: true,
+        threshold: 0.4,
       }),
     [workflows]
   );
