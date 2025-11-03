@@ -16,5 +16,8 @@
     "service_worker": "src/background.ts",
     "type": "module"
   },
+  "icons": {
+    "256": "icons/icon256.png"
+  },
   "manifest_version": 3
 }
