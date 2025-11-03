@@ -11,5 +11,10 @@
       "run_at": "document_end"
     }
   ],
+  "host_permissions": ["https://github.com/*"],
+  "background": {
+    "service_worker": "src/background.ts",
+    "type": "module"
+  },
   "manifest_version": 3
 }

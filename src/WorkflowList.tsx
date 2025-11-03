@@ -1,11 +1,20 @@
-import { use, useMemo, useState } from "react";
-import { loadWorkflows } from "./loadWorkflows";
+import { use, useEffect, useMemo, useState } from "react";
 import Fuse from "fuse.js";
+import { contentToBackground } from "./messages";
+
+const loadWorkflows = ({ org, repo }: { org: string; repo: string }) => {
+  return contentToBackground("LOAD_WORKFLOWS", { org, repo });
+};
+
+const promises = new Map<string, ReturnType<typeof loadWorkflows>>();
 
 export function WorkflowList({ org, repo }: { org: string; repo: string }) {
-  const workflows = use(
-    useMemo(() => loadWorkflows({ org, repo }), [org, repo])
-  );
+  const key = `${org}/${repo}`;
+  const promise =
+    promises.get(key) ??
+    promises.set(key, loadWorkflows({ org, repo })).get(key)!;
+
+  const workflows = use(promise);
   const [filter, setFilter] = useState("");
   const fuse = useMemo(
     () =>
@@ -16,6 +25,12 @@ export function WorkflowList({ org, repo }: { org: string; repo: string }) {
       }),
     [workflows]
   );
+
+  useEffect(() => {
+    return () => {
+      promises.clear();
+    };
+  }, []);
 
   const filteredWorkflows = useMemo(
     () =>
